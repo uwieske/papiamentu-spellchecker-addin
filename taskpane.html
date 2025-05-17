@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Papiamentu Spellchecker</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <script>
+    Office.onReady(() => {
+      document.getElementById('checkBtn').onclick = async () => {
+        await Word.run(async context => {
+          const body = context.document.body;
+          context.load(body, 'text');
+          await context.sync();
+
+          const text = body.text;
+          const errors = checkSpelling(text);
+
+          document.getElementById('result').innerText = errors.length > 0 ?
+            `Mispelled words: ${errors.join(', ')}` :
+            'No spelling issues found.';
+        });
+      };
+    });
+
+    function checkSpelling(text) {
+      const papiamentuWords = new Set(['bon', 'dia', 'kon', 'bo', 'yama', 'mi', 'ta', 'hopi']);
+      return text.split(/\s+/).filter(w => !papiamentuWords.has(w.toLowerCase()));
+    }
+  </script>
+</head>
+<body>
+  <h2>Papiamentu Spellchecker</h2>
+  <button id="checkBtn">Check Spelling</button>
+  <div id="result" style="margin-top: 1em;"></div>
+</body>
+</html>
